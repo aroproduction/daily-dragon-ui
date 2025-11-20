@@ -1,6 +1,8 @@
-import './App.css'
+import './App.css';
+import {Box} from "@chakra-ui/react";
 import '@aws-amplify/ui-react/styles.css';
-import {Route, Routes} from 'react-router-dom'
+import {Route, Routes} from 'react-router-dom';
+import Home from './components/Home.jsx';
 import Practice from "./components/practice/Practice.jsx";
 import VocabularyPage from "./components/vocabulary/VocabularyPage.jsx";
 import Header from "./components/Header.jsx";
@@ -25,20 +27,22 @@ function App() {
                 console.error('Failed to fetch auth session:', error);
             }
         }
+
         getToken();
     }, []);
 
     return (
         <Authenticator>
             {({signOut, user}) => (
-                <div className="centered">
-                    <Header user={user} signOut={signOut} />
+                <Box className="centered" p={4}>
+                    <Header user={user} signOut={signOut}/>
 
                     <Routes>
-                        <Route path="/vocabulary" element={<VocabularyPage/>}/>
-                        <Route path="/practice" element={<Practice/>}/>
+                        <Route path="/daily-dragon" element={<Home/>}/>
+                        <Route path="/daily-dragon/vocabulary" element={<VocabularyPage/>}/>
+                        <Route path="/daily-dragon/practice" element={<Practice/>}/>
                     </Routes>
-                </div>
+                </Box>
             )}
         </Authenticator>
     );
