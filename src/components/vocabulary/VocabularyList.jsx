@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {RemoveWordButton} from "./RemoveWordButton.jsx";
+import {RemoveWordDialog} from "./RemoveWordDialog.jsx";
 import {
     SimpleGrid,
     Box,
@@ -30,7 +30,7 @@ export function VocabularyList({items}) {
                         m={2}
                     >
                         <Text>{item}</Text>
-                        <RemoveWordButton
+                        <RemoveWordDialog
                             word={item}
                             onDeleted={() => {
                                 fetchVocabulary();
