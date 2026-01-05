@@ -4,6 +4,7 @@ import {deleteWord} from "../../services/vocabularyService.js";
 import {useState} from "react";
 
 export function RemoveWordDialog({word, onDeleted}) {
+    const [isOpen, setIsOpen] = useState(false);
     const [removeButtonDisabled, setRemoveButtonDisabled] = useState(false);
 
     const handleDelete = async () => {
@@ -25,12 +26,17 @@ export function RemoveWordDialog({word, onDeleted}) {
                 type: "error"
             })
         } finally {
+            setIsOpen(false);
             setRemoveButtonDisabled(false);
         }
     }
 
     return (
-        <Dialog.Root>
+        <Dialog.Root
+            open={isOpen}
+            onOpenChange={(details) => setIsOpen(details.open)}
+            role="alertdialog"
+        >
             <Dialog.Trigger asChild>
                 <Button size="xs" variant="ghost" color="red" title="Remove word">x</Button>
             </Dialog.Trigger>
