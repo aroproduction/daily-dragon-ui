@@ -4,7 +4,10 @@ import {ChakraProvider, defaultSystem} from "@chakra-ui/react";
 import {RemoveWordDialog} from "../../../components/vocabulary/RemoveWordDialog.jsx";
 
 jest.mock("../../../services/vocabularyService.js", () => ({
-    deleteWord: jest.fn(() => Promise.resolve({ok: true, json: () => Promise.resolve({message: "Word deleted successfully"})})),
+    deleteWord: jest.fn(() => Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({message: "Word deleted successfully"})
+    })),
 }));
 
 test("allows removing a word through dialog workflow", async () => {
@@ -26,5 +29,58 @@ test("allows removing a word through dialog workflow", async () => {
     });
 
     const {deleteWord} = require("../../../services/vocabularyService.js");
+    expect(deleteWord).toHaveBeenCalledWith("学习");
+});
+
+test("exception during word removal is handled gracefully", async () => {
+    const {deleteWord} = require("../../../services/vocabularyService.js");
+    deleteWord.mockImplementationOnce(() => {
+        throw new Error("Network error");
+    });
+
+    render(
+        <ChakraProvider value={defaultSystem}>
+            <RemoveWordDialog word="学习" onDelete={jest.fn()}/>
+        </ChakraProvider>
+    );
+
+    fireEvent.click(screen.getByTitle("Remove word"));
+
+    const removeButton = await screen.findByRole("button", {name: /remove/i});
+    expect(removeButton).not.toBeDisabled();
+
+    fireEvent.click(removeButton);
+
+    await waitFor(() => {
+        expect(screen.queryByText(/Do you want to remove word "学习"\?/i)).toBeNull();
+    });
+
+    expect(deleteWord).toHaveBeenCalledWith("学习");
+});
+
+test("deletion response is not ok is handled properly", async () => {
+    const {deleteWord} = require("../../../services/vocabularyService.js");
+    deleteWord.mockImplementationOnce(() => Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve({detail: "Word not found"})
+    }));
+
+    render(
+        <ChakraProvider value={defaultSystem}>
+            <RemoveWordDialog word="学习" onDelete={jest.fn()}/>
+        </ChakraProvider>
+    );
+
+    fireEvent.click(screen.getByTitle("Remove word"));
+
+    const removeButton = await screen.findByRole("button", {name: /remove/i});
+    expect(removeButton).not.toBeDisabled();
+
+    fireEvent.click(removeButton);
+
+    await waitFor(() => {
+        expect(screen.queryByText(/Do you want to remove word "学习"\?/i)).toBeNull();
+    });
+
     expect(deleteWord).toHaveBeenCalledWith("学习");
 });

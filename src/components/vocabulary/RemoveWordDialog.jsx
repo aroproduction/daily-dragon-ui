@@ -18,6 +18,12 @@ export function RemoveWordDialog({word, onDelete}) {
                     type: "success",
                 });
                 onDelete()
+            } else {
+                const json = await response.json();
+                toaster.create({
+                    title: "Something went wrong: " + json.detail,
+                    type: "error"
+                })
             }
         } catch (e) {
             const message = "Error deleting word:"
