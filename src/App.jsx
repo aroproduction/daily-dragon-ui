@@ -18,6 +18,7 @@ const emailField = [
         label: "Email",
         placeholder: "Enter email",
         required: true,
+        key: "email"
     },
 ];
 
